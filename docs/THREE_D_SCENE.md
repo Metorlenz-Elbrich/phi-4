@@ -1,72 +1,96 @@
 # 3D Hero Scene
 
-The hero centerpiece is a 3D interpretation of the PhiBrain logo brain. It is **not** an abstract polyhedron — it preserves the recognizable two-hemisphere silhouette of the source logo.
+The hero centerpiece is a **semi-realistic brain** with an internal "idea flow" — glowing paths threading through the volume, with small particles travelling along them and pulsing nodes at the path endpoints.
+
+The brief: not an abstract polyhedron, not a medical render — a clearly recognizable brain that reads as "intelligence in motion".
 
 ## Composition
 
 ```
 BrainScene
-└─ Canvas
-   ├─ ambientLight + directionalLight
-   ├─ <Environment preset="night" | "city" />
+└─ Canvas (frameloop = "always" when in viewport, "never" otherwise)
+   ├─ ambientLight        (low base illumination)
+   ├─ directionalLight    (single key light)
+   ├─ pointLight (inner)  (cyan inner glow at brain center)
    └─ Brain (group)
-      ├─ BrainShell           ← glass-like transmission material on a brain-shaped mesh
-      ├─ NodeNetwork          ← right hemisphere: organic glowing nodes + edges
-      ├─ CircuitLattice       ← left hemisphere: structured grid + circuit chips
-      ├─ PhiSpine             ← central torus + cylinder (the connecting "phi")
-      └─ pointLight × 4       ← coloured accent lights
+      ├─ BrainShell       ← low-poly deformed sphere, translucent, soft sulci
+      └─ IdeaFlow
+         ├─ Tube paths    ← 5 CatmullRom curves rendered as thin TubeGeometry
+         ├─ Particles     ← 1 instancedMesh, ~15 sphere instances travelling along the curves
+         └─ Endpoint nodes ← 1 instancedMesh, pulsing
 ```
+
+**Total draw calls:** ~9 (1 shell + 5 tubes + 1 particles + 1 nodes + a small handful of overhead).
+**Total vertices:** ~4 k.
+**Lights:** 3.
 
 ## The shell
 
-`brainSurface(u, v)` generates a parametric mesh from a deformed ellipsoid:
+A `SphereGeometry(1, 48, 32)` (1 568 verts) is deformed in three passes:
 
-```
-x = a · sin(πv) · cos(2πu) + cleft(v) · cos(2πu)
-y = b · cos(πv) − flatten(v)
-z = c · sin(πv) · sin(2πu) + fold(u, v)
-```
+1. **Proportion scaling** — `(x, y, z) *= (1.28, 1.0, 1.12)` to give brain-ish width and depth.
+2. **Interhemispheric fissure** — a Gaussian groove down the top centre lowers `y` slightly.
+3. **Subtle sulci/gyri** — three layered sinusoidal bumps along the normal, tuned small enough that the surface reads as "folded", not noisy.
+4. **Bottom flatten** — a gentle damp where the brainstem would attach.
 
-- `a, b, c` are the brain's width/height/depth (1.45 / 1.05 / 1.15).
-- `fold` introduces a longitudinal wave (the lobe groove).
-- `cleft` adds a small frontal pinch at the top.
-- `flatten` trims the bottom to suggest the brainstem cutoff.
+Normals are recomputed at the end.
 
-The shell uses `<MeshTransmissionMaterial>` from `@react-three/drei` for glass-like refraction. It's tinted toward cyan (`#9bf8ff`) so the brand colour reads even at low light.
+Material: `MeshStandardMaterial` with **transparency, low opacity (0.32), and depth-write off**. This lets the inner paths and particles read through the shell while keeping cost low — no `MeshTransmissionMaterial`, no environment HDR loading. The emissive intensity slowly pulses in `useFrame` to suggest internal glow.
 
-## Hemispheres
+## Idea flow
 
-The same `brainSurface` function generates the support meshes — that's what guarantees both hemispheres sit on the brain silhouette instead of floating inside an abstract bubble.
+`buildFlow(5)` produces five deterministic curves using a seeded RNG so the visual is stable across renders. Each curve:
 
-**Right hemisphere (organic):** 64 nodes sampled at `u ∈ [0, 0.5]`, connected to their two nearest neighbours. Each node is a small sphere with cyan emissive material; edges are thin cylinders with translucent base material.
+- has 5 sampled control points,
+- spirals roughly in a single quadrant of the brain so paths don't all overlap visually,
+- is wrapped in a `TubeGeometry(curve, 64, 0.006, 5, false)` — a thin glowing pipe.
 
-**Left hemisphere (structured):** A grid of "trace" polylines sampled at `u ∈ [0.5, 1]` on `(rows × cols) = (8 × 12)`. Twenty-two box meshes act as circuit "chips" scattered along the lattice.
+**Particles** are a **single `instancedMesh`** with `5 × 3 = 15` instances. Per frame, each instance moves along its curve via `curve.getPoint(u)` and its scale pulses subtly. One `instanceMatrix.needsUpdate = true` call per frame, one draw call total.
 
-## Lighting
+**Endpoint nodes** are another single `instancedMesh` (~10 instances). Positions are written once on mount; the whole group pulses via a single `scale` update per frame rather than per-instance.
 
-| Light                   | Colour          | Purpose                          |
-|-------------------------|------------------|----------------------------------|
-| `ambientLight`          | neutral          | Base illumination                |
-| `directionalLight`      | warm white       | Primary modelling light          |
-| Right pointLight        | cyan             | Accent the node network          |
-| Left pointLight         | violet           | Accent the circuit lattice       |
-| Top pointLight          | coral            | Warmth, breaks coldness          |
-| Bottom pointLight       | mint             | Reflection / colour balance      |
-| `<Environment>`         | night / city     | Adapts to theme for transmission |
+## Materials
 
-## Interaction
+- **Shell:** `MeshStandardMaterial`, translucent, depth-write off, emissive cyan.
+- **Tubes:** `MeshBasicMaterial`, additive-feel via `toneMapped: false` so they don't get clamped.
+- **Particles & nodes:** `MeshStandardMaterial` with high emissive intensity (2.4 / 1.6), also `toneMapped: false`.
 
-- **Idle:** `<Float>` from drei keeps the form gently bobbing.
-- **Pointer:** `onPointerMove` writes normalised coords into a `useRef`; `useFrame` lerps rotation toward those targets.
-- **Theme:** the `<Environment>` preset and ambient intensity switch when `next-themes` flips dark/light.
+No `MeshTransmissionMaterial`, no `MeshPhysicalMaterial` clearcoat, no environment map.
 
-## Performance
+## Motion
 
-- `dpr={[1, 1.75]}` caps device pixel ratio.
-- `powerPreference: "high-performance"` requests the discrete GPU on laptops.
-- The whole scene is **mounted only on non-mobile, non-reduced-motion** clients. On mobile or accessibility mode, the `BrainStatic` component renders the logo with a CSS halo instead.
-- All node/edge/chip arrays are computed once in `useMemo`; only emissive intensities update per-frame.
+- **Idle float** — `position.y = sin(t * 0.6) * 0.06`.
+- **Slow rotation** — `rotation.y += 0.0008` per frame.
+- **Pointer parallax** — lerp toward normalised pointer with factor 0.04; gentle, never aggressive.
+- **Particle travel** — `u = (t * 0.12 + offset) % 1`. Slow enough to read.
+- **Pulses** — node scale and shell emissive intensity follow low-frequency sines (1.6 Hz and 0.6 Hz respectively).
+
+## Performance gates
+
+| Gate                           | Behaviour                                                |
+|--------------------------------|----------------------------------------------------------|
+| `useIsMobile()` (Hero)         | Below 768px → render `BrainStatic` (SVG fallback)        |
+| `usePrefersReducedMotion()`    | Reduced motion → render `BrainStatic`                    |
+| `IntersectionObserver` (Canvas)| Off-screen → `frameloop="never"`, zero per-frame cost    |
+| `dpr={[1, 1.5]}`               | Pixel ratio capped — no 3× retina overdraw              |
+| `dynamic(... { ssr: false })`  | The whole scene is split off the initial JS bundle       |
 
 ## Customisation
 
-To rebrand the centerpiece without touching geometry, change the `CYAN`, `VIOLET`, `CORAL`, `MINT` constants at the top of `BrainScene.tsx`. To shift the silhouette, edit the `a / b / c` constants and `fold / cleft / flatten` magnitudes in `brainSurface`.
+- **Brand colours** — `ACCENT_CYAN`, `ACCENT_VIOLET` constants at the top of `BrainScene.tsx`.
+- **Brain proportions** — `v.x *= 1.28; v.y *= 1.0; v.z *= 1.12` in `makeBrainGeometry`.
+- **Number of paths** — `buildFlow(5)` in `IdeaFlow`. Each path adds ~5 verts on the curve and 3 particles.
+- **Particle speed** — `t * 0.12` in `IdeaFlow.useFrame`.
+- **Shell translucency** — `opacity={0.32}` in `BrainShell`.
+
+## Mobile / no-WebGL fallback
+
+`BrainStatic` renders a pure SVG idea-flow:
+
+- a two-lobe brain silhouette,
+- 13 pulsing nodes,
+- 20 connecting edges,
+- one travelling pulse along the central fissure (SVG `<animateMotion>`),
+- two CSS-animated ambient halos.
+
+The whole fallback is ≤ 4 KB and paints in the first frame.

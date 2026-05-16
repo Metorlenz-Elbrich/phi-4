@@ -8,7 +8,7 @@ import { site } from "@/lib/site";
 
 export function CTA() {
   return (
-    <section id="contact" className="relative scroll-mt-24 py-28">
+    <section id="contact" className="relative scroll-mt-24 py-32 sm:py-36">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 40 }}

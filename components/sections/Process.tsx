@@ -67,7 +67,7 @@ export function Process() {
   }, [reduced]);
 
   return (
-    <section id="process" className="relative scroll-mt-24 py-28">
+    <section id="process" className="section-soft relative scroll-mt-24 py-32 sm:py-36">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 28 }}

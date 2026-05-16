@@ -17,9 +17,10 @@ This document captures the performance discipline applied to the build and the t
 
 ### 1. Code-split the heavy stuff
 
-- `BrainScene` is loaded via `dynamic(... { ssr: false })`. R3F, three, and drei are excluded from the initial bundle.
+- `BrainScene` is loaded via `dynamic(... { ssr: false })`. R3F and three are excluded from the initial bundle.
+- **`@react-three/drei` is no longer a dependency.** The new scene uses only base three.js (TubeGeometry, instancedMesh, MeshStandardMaterial) — drei would have added ~100 KB to the WebGL chunk for features we don't need.
 - GSAP is imported inside `useEffect` in `Process` and `Storytelling` only — never at module top-level. Pages that don't include those sections don't ship GSAP at all.
-- `experimental.optimizePackageImports` in `next.config.mjs` tree-shakes `lucide-react` and `framer-motion`.
+- `experimental.optimizePackageImports` in `next.config.mjs` tree-shakes `lucide-react`.
 
 ### 2. Mobile fallback
 
@@ -34,7 +35,7 @@ The fallback is a static logo + CSS halo — paints in the first frame.
 ### 3. Animation cost
 
 - Framer Motion uses `viewport={{ once: true }}` for all entrance animations so observers disconnect after firing.
-- The brain scene uses `dpr={[1, 1.75]}` to cap pixel density and `useMemo` for all geometry & instance arrays. Per-frame work is limited to material `emissiveIntensity` updates and a position lerp.
+- The brain scene uses `dpr={[1, 1.5]}` to cap pixel density, `useMemo` for all geometry & instance arrays, and **`frameloop` toggled via IntersectionObserver** so the canvas does literally zero work while off-screen. Per-frame work is bounded by ~25 matrix updates (15 particles + ~10 nodes) and two sin-based scale/emissive writes.
 - The horizontal pinned scroll in `Storytelling` is `pin: true, scrub: 0.6` — `scrub` defers updates to the next animation frame, avoiding scroll jank.
 - Lenis is gated on reduced-motion; users who opt out get native scroll with no extra cost.
 
@@ -65,6 +66,5 @@ The fallback is a static logo + CSS halo — paints in the first frame.
 ## Future improvements
 
 - Preload `Inter` from `next/font` (`preload: true` is the default since Next 14) — verify in the network panel.
-- Move `BrainScene` to an `IntersectionObserver`-gated loader so it only initialises when the hero is actually in the viewport on slow connections.
 - Add `next-sitemap` for SEO at deploy time.
 - Add a real OG image (1200×630 PNG) under `public/og.png` and wire it into the `metadata.openGraph` block in `app/layout.tsx`.

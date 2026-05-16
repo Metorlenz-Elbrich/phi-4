@@ -25,7 +25,7 @@ export function Hero() {
       id="top"
       className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-28 pb-16"
     >
-      {/* Ambient gradient field */}
+      {/* Ambient gradient field — softer, more breathing room */}
       <div
         className="ambient-glow"
         style={{
@@ -34,7 +34,7 @@ export function Hero() {
           left: "-15%",
           top: "-20%",
           background:
-            "radial-gradient(circle, hsl(var(--brand-cyan) / 0.4) 0%, transparent 60%)",
+            "radial-gradient(circle, hsl(var(--brand-cyan) / 0.28) 0%, transparent 65%)",
         }}
       />
       <div
@@ -45,18 +45,7 @@ export function Hero() {
           right: "-10%",
           top: "20%",
           background:
-            "radial-gradient(circle, hsl(var(--brand-violet) / 0.35) 0%, transparent 60%)",
-        }}
-      />
-      <div
-        className="ambient-glow"
-        style={{
-          width: "30rem",
-          height: "30rem",
-          left: "30%",
-          bottom: "-10%",
-          background:
-            "radial-gradient(circle, hsl(var(--brand-coral) / 0.25) 0%, transparent 60%)",
+            "radial-gradient(circle, hsl(var(--brand-violet) / 0.22) 0%, transparent 65%)",
         }}
       />
 

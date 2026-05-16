@@ -42,28 +42,28 @@
   }
 
   .dark {
-    /* Dark mode — premium navy & charcoal */
-    --background: 222 45% 6%;
+    /* Dark mode — softer premium navy (lifted from near-black) */
+    --background: 222 38% 9%;
     --foreground: 210 40% 98%;
 
-    --card: 222 40% 9%;
+    --card: 222 34% 12%;
     --card-foreground: 210 40% 98%;
 
-    --muted: 222 30% 14%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 222 28% 16%;
+    --muted-foreground: 215 22% 70%;
 
-    --primary: 188 95% 55%;
-    --primary-foreground: 222 47% 8%;
+    --primary: 188 95% 58%;
+    --primary-foreground: 222 47% 10%;
 
-    --secondary: 222 30% 14%;
+    --secondary: 222 28% 16%;
     --secondary-foreground: 210 40% 98%;
 
-    --accent: 188 95% 18%;
+    --accent: 188 95% 20%;
     --accent-foreground: 188 95% 85%;
 
-    --border: 222 30% 18%;
-    --input: 222 30% 18%;
-    --ring: 188 95% 55%;
+    --border: 222 26% 20%;
+    --input: 222 26% 20%;
+    --ring: 188 95% 58%;
 
     --brand-cyan: 188 95% 60%;
     --brand-violet: 262 83% 72%;
@@ -157,9 +157,18 @@
   .ambient-glow {
     position: absolute;
     border-radius: 9999px;
-    filter: blur(80px);
-    opacity: 0.4;
+    filter: blur(90px);
+    opacity: 0.28;
     pointer-events: none;
+  }
+
+  .section-soft {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--background)) 0%,
+      hsl(var(--card) / 0.5) 50%,
+      hsl(var(--background)) 100%
+    );
   }
 
   .premium-card {

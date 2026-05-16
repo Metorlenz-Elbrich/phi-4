@@ -171,7 +171,7 @@ function Card({ project, index }: { project: Project; index: number }) {
 
 export function Projects() {
   return (
-    <section id="work" className="relative scroll-mt-24 py-28">
+    <section id="work" className="relative scroll-mt-24 py-32 sm:py-36">
       <div
         className="ambient-glow"
         style={{

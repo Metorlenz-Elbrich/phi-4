@@ -127,7 +127,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
 
 export function Services() {
   return (
-    <section id="services" className="relative scroll-mt-24 py-28">
+    <section id="services" className="relative scroll-mt-24 py-32 sm:py-36">
       <div
         className="ambient-glow"
         style={{

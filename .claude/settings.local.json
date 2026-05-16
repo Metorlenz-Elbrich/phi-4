@@ -6,7 +6,8 @@
       "Bash(npm --version)",
       "Bash(npm install *)",
       "Bash(npm run *)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(taskkill //PID 2056 //F)"
     ]
   }
 }
