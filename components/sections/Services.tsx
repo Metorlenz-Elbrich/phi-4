@@ -73,7 +73,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
           `${e.clientY - rect.top}px`
         );
       }}
-      className="premium-card group"
+      className="premium-card group p-6 sm:p-7 lg:p-8"
     >
       <div
         className={cn(
@@ -127,7 +127,7 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
 
 export function Services() {
   return (
-    <section id="services" className="relative scroll-mt-24 py-32 sm:py-36">
+    <section id="services" className="relative scroll-mt-24 py-20 sm:py-28 lg:py-32">
       <div
         className="ambient-glow"
         style={{
@@ -152,13 +152,13 @@ export function Services() {
             <span className="h-1.5 w-1.5 rounded-full bg-brand-cyan animate-glow-pulse" />
             What we do
           </div>
-          <h2 className="mt-5 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          <h2 className="mt-5 text-balance font-display text-3xl font-semibold leading-[1.15] tracking-tight sm:text-4xl sm:leading-tight lg:text-5xl">
             One studio.{" "}
             <span className="text-gradient">Seven crafts</span>.
-            <br />
-            All wired into the same brain.
+            <br className="hidden sm:block" />
+            <span> All wired into the same brain.</span>
           </h2>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
             From the first sketch to the live product — design, engineering, and security
             shipped by one team that actually talks to each other.
           </p>

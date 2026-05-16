@@ -77,7 +77,7 @@ export function Footer() {
             </h4>
             <a
               href={`mailto:${site.email}`}
-              className="mt-4 block font-display text-xl text-foreground transition-colors hover:text-brand-cyan"
+              className="mt-4 block break-all font-display text-base text-foreground transition-colors hover:text-brand-cyan sm:text-xl"
             >
               {site.email}
             </a>
@@ -89,8 +89,8 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground md:flex-row md:items-center">
           <p>© {new Date().getFullYear()} PhiBrain. Crafted with care.</p>
-          <p className="font-mono">
-            Built with Next.js · React Three Fiber · GSAP · Tailwind
+          <p className="font-mono text-[11px] sm:text-xs">
+            Built with Next.js · R3F · GSAP · Tailwind
           </p>
         </div>
       </div>

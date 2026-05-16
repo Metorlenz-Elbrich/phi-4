@@ -7,7 +7,8 @@
       "Bash(npm install *)",
       "Bash(npm run *)",
       "Bash(curl *)",
-      "Bash(taskkill //PID 2056 //F)"
+      "Bash(taskkill //PID 2056 //F)",
+      "Bash(grep -oE \"PhiBrain|Ideas with a|From .{1,20}idea|Storytelling|Secure by design\")"
     ]
   }
 }

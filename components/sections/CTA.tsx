@@ -8,14 +8,14 @@ import { site } from "@/lib/site";
 
 export function CTA() {
   return (
-    <section id="contact" className="relative scroll-mt-24 py-32 sm:py-36">
+    <section id="contact" className="relative scroll-mt-24 py-20 sm:py-28 lg:py-32">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-15%" }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-[2.5rem] border border-border bg-gradient-to-br from-card via-card to-card p-10 sm:p-16"
+          className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card via-card to-card p-7 sm:rounded-[2.5rem] sm:p-12 lg:p-16"
         >
           {/* Decorative glows */}
           <div
@@ -56,11 +56,11 @@ export function CTA() {
               <span className="h-1.5 w-1.5 rounded-full bg-brand-cyan animate-glow-pulse" />
               Let's make something
             </div>
-            <h2 className="mt-5 font-display text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+            <h2 className="mt-5 text-balance font-display text-3xl font-semibold leading-[1.15] tracking-tight sm:text-5xl sm:leading-[1.05] lg:text-6xl">
               Bring us the idea.{" "}
               <span className="text-gradient">We'll bring the brain</span>.
             </h2>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground sm:mt-6 sm:text-base lg:text-lg">
               Tell us about your product, your team, your timeline. We'll come back inside
               one business day with a sharp scope and a clear next step.
             </p>

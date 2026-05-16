@@ -8,7 +8,7 @@ const icons = [ShieldCheck, Lock, Eye];
 
 export function Security() {
   return (
-    <section id="security" className="section-soft relative scroll-mt-24 py-32 sm:py-36">
+    <section id="security" className="section-soft relative scroll-mt-24 py-20 sm:py-28 lg:py-32">
       <div
         className="ambient-glow"
         style={{
@@ -34,11 +34,11 @@ export function Security() {
               <span className="h-1.5 w-1.5 rounded-full bg-brand-cyan animate-glow-pulse" />
               Security
             </div>
-            <h2 className="mt-5 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+            <h2 className="mt-5 text-balance font-display text-3xl font-semibold leading-[1.15] tracking-tight sm:text-4xl sm:leading-tight lg:text-5xl">
               Secure by design.{" "}
               <span className="text-gradient-cyan">Human by default</span>.
             </h2>
-            <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <p className="mt-5 text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
               Security shouldn't feel like a wall — it should feel like a guardrail. We
               bake hardening, monitoring, and incident response into the same repo as your
               product, with playbooks your team can actually follow.
@@ -70,7 +70,7 @@ export function Security() {
                     ease: [0.22, 1, 0.36, 1],
                     delay: i * 0.1,
                   }}
-                  className="group relative overflow-hidden rounded-3xl border border-border bg-card p-7 transition-all hover:border-brand-cyan/40"
+                  className="group relative overflow-hidden rounded-3xl border border-border bg-card p-5 transition-all hover:border-brand-cyan/40 sm:p-6 lg:p-7"
                 >
                   <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-brand-cyan/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
                   <div className="relative flex items-start gap-5">
@@ -78,7 +78,7 @@ export function Security() {
                       <Icon className="h-5 w-5" />
                     </div>
                     <div>
-                      <h3 className="font-display text-xl font-semibold tracking-tight">
+                      <h3 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
                         {p.title}
                       </h3>
                       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">

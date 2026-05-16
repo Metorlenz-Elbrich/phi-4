@@ -67,7 +67,7 @@ export function Process() {
   }, [reduced]);
 
   return (
-    <section id="process" className="section-soft relative scroll-mt-24 py-32 sm:py-36">
+    <section id="process" className="section-soft relative scroll-mt-24 py-20 sm:py-28 lg:py-32">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 28 }}
@@ -80,20 +80,24 @@ export function Process() {
             <span className="h-1.5 w-1.5 rounded-full bg-brand-violet animate-glow-pulse" />
             How we work
           </div>
-          <h2 className="mt-5 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          <h2 className="mt-5 text-balance font-display text-3xl font-semibold leading-[1.15] tracking-tight sm:text-4xl lg:text-5xl">
             From <span className="text-gradient-cyan">idea</span> to{" "}
-            <span className="text-gradient">launch</span> — and the months after.
+            <span className="text-gradient">launch</span>
+            <span className="block text-muted-foreground/90 sm:mt-2 sm:inline sm:text-foreground">
+              <span className="hidden sm:inline"> — </span>
+              and the months after.
+            </span>
           </h2>
         </motion.div>
 
-        <div ref={containerRef} className="relative mx-auto mt-20 max-w-4xl">
-          <div className="absolute left-6 top-0 h-full w-px bg-border md:left-1/2 md:-translate-x-1/2" />
+        <div ref={containerRef} className="relative mx-auto mt-12 max-w-4xl sm:mt-16 lg:mt-20">
+          <div className="absolute left-5 top-0 h-full w-px bg-border md:left-1/2 md:-translate-x-1/2" />
           <div
-            className="process-progress absolute left-6 top-0 h-full w-px origin-top bg-gradient-to-b from-brand-cyan via-brand-violet to-brand-coral md:left-1/2 md:-translate-x-1/2"
+            className="process-progress absolute left-5 top-0 h-full w-px origin-top bg-gradient-to-b from-brand-cyan via-brand-violet to-brand-coral md:left-1/2 md:-translate-x-1/2"
             style={{ transform: "scaleY(0)" }}
           />
 
-          <div className="flex flex-col gap-12 md:gap-20">
+          <div className="flex flex-col gap-10 sm:gap-12 md:gap-20">
             {processSteps.map((step, i) => {
               const isRight = i % 2 === 1;
               return (
@@ -104,24 +108,24 @@ export function Process() {
                   }`}
                 >
                   <div
-                    className={`relative pl-16 md:pl-0 ${
+                    className={`relative pl-12 md:pl-0 ${
                       isRight ? "md:pl-16 md:pr-0 md:text-left" : "md:pr-16 md:text-right"
                     }`}
                   >
                     <div className="font-mono text-xs uppercase tracking-[0.2em] text-brand-cyan">
                       {step.index}
                     </div>
-                    <h3 className="mt-2 font-display text-3xl font-semibold tracking-tight">
+                    <h3 className="mt-2 font-display text-2xl font-semibold tracking-tight sm:text-3xl">
                       {step.title}
                     </h3>
-                    <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground sm:mt-3 sm:text-base">
                       {step.description}
                     </p>
                   </div>
 
                   <div className="hidden md:block" />
 
-                  <span className="absolute left-6 top-2 flex h-3 w-3 -translate-x-1/2 items-center justify-center md:left-1/2">
+                  <span className="absolute left-5 top-2 flex h-3 w-3 -translate-x-1/2 items-center justify-center md:left-1/2">
                     <span className="absolute inline-flex h-3 w-3 rounded-full bg-brand-cyan opacity-60 blur-[3px]" />
                     <span className="relative inline-flex h-2 w-2 rounded-full bg-gradient-to-br from-brand-cyan to-brand-violet" />
                   </span>

@@ -21,26 +21,22 @@ export function Navbar() {
   }, []);
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-500",
-        scrolled ? "py-3" : "py-5"
-      )}
-    >
+    <header className="fixed inset-x-0 top-0 z-50 py-3 sm:py-4">
       <div className="container">
         <div
           className={cn(
-            "flex items-center justify-between rounded-full border px-4 transition-all duration-500 sm:px-6",
+            // Fixed height — never grows on scroll, only the chrome changes.
+            "flex h-12 items-center justify-between rounded-full px-3 transition-[background-color,border-color,box-shadow] duration-300 sm:h-14 sm:px-5",
             scrolled
-              ? "border-border bg-background/70 backdrop-blur-xl shadow-[0_6px_30px_-10px_hsl(var(--brand-cyan)/0.25)]"
-              : "border-transparent bg-transparent"
+              ? "border border-border bg-background/80 shadow-[0_6px_30px_-12px_hsl(var(--brand-cyan)/0.25)] backdrop-blur-xl"
+              : "border border-transparent bg-transparent"
           )}
         >
           <Link
             href="#top"
-            className="group flex items-center gap-2.5 py-2.5 text-sm font-semibold tracking-tight"
+            className="group flex h-full items-center gap-2 text-sm font-semibold tracking-tight"
           >
-            <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+            <span className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-lg sm:h-8 sm:w-8">
               <Image
                 src="/assets/phibrain-logo.png"
                 alt="PhiBrain"
@@ -48,8 +44,8 @@ export function Navbar() {
                 sizes="32px"
                 className="object-contain transition-transform duration-500 group-hover:scale-110"
               />
-            </div>
-            <span className="font-display text-base">
+            </span>
+            <span className="font-display text-sm sm:text-base">
               Phi<span className="text-gradient-cyan">Brain</span>
             </span>
           </Link>
@@ -59,24 +55,23 @@ export function Navbar() {
               <a
                 key={item.href}
                 href={item.href}
-                className="rounded-full px-4 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:px-4"
               >
                 {item.label}
               </a>
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ThemeToggle className="h-9 w-9 sm:h-10 sm:w-10" />
             <a href="#contact" className="hidden sm:block">
-              <Button size="sm" className="hidden sm:inline-flex">
-                Start a project
-              </Button>
+              <Button size="sm">Start a project</Button>
             </a>
             <button
               type="button"
-              aria-label="Open menu"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card/60 backdrop-blur md:hidden"
+              aria-label={open ? "Close menu" : "Open menu"}
+              aria-expanded={open}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/60 backdrop-blur md:hidden"
               onClick={() => setOpen((s) => !s)}
             >
               {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

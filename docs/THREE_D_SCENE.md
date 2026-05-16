@@ -1,8 +1,11 @@
 # 3D Hero Scene
 
-The hero centerpiece is a **semi-realistic brain** with an internal "idea flow" — glowing paths threading through the volume, with small particles travelling along them and pulsing nodes at the path endpoints.
+The hero centerpiece is a **clearly recognizable brain** split into two distinct hemispheres:
 
-The brief: not an abstract polyhedron, not a medical render — a clearly recognizable brain that reads as "intelligence in motion".
+- **Left hemisphere — engineering / logic.** A network of structured circuit traces hugging the surface, with small chip-like boxes at sparse grid points.
+- **Right hemisphere — creativity / ideas.** Organic branching neurons growing inward from soma cell-bodies, with travelling light particles along the dendrites and pulsing endpoint nodes.
+
+The brief: not an abstract polyhedron, not a medical render — a brain that reads as "intelligence in motion" with both hemispheres immediately distinguishable.
 
 ## Composition
 
@@ -13,57 +16,64 @@ BrainScene
    ├─ directionalLight    (single key light)
    ├─ pointLight (inner)  (cyan inner glow at brain center)
    └─ Brain (group)
-      ├─ BrainShell       ← low-poly deformed sphere, translucent, soft sulci
-      └─ IdeaFlow
-         ├─ Tube paths    ← 5 CatmullRom curves rendered as thin TubeGeometry
-         ├─ Particles     ← 1 instancedMesh, ~15 sphere instances travelling along the curves
-         └─ Endpoint nodes ← 1 instancedMesh, pulsing
+      ├─ BrainShell         ← translucent parametric brain (vertex-coloured
+      │                       cool on the left, warm on the right)
+      ├─ CircuitTraces      ← LineSegments (1 draw) + instanced chips (1 draw)
+      ├─ Neurons            ← LineSegments (1 draw) + instanced particles (1 draw)
+      │                       + instanced endpoint nodes (1 draw)
+      └─ PhiSpine           ← small accent torus along the fissure
 ```
 
-**Total draw calls:** ~9 (1 shell + 5 tubes + 1 particles + 1 nodes + a small handful of overhead).
+**Total draw calls:** ~8.
 **Total vertices:** ~4 k.
 **Lights:** 3.
 
-## The shell
+## The brain shell
 
-A `SphereGeometry(1, 48, 32)` (1 568 verts) is deformed in three passes:
+Built parametrically on a 64 × 32 grid (~2 k verts). The longitude `u ∈ [0, 1]` maps to azimuth `0 → 2π`. By construction:
 
-1. **Proportion scaling** — `(x, y, z) *= (1.28, 1.0, 1.12)` to give brain-ish width and depth.
-2. **Interhemispheric fissure** — a Gaussian groove down the top centre lowers `y` slightly.
-3. **Subtle sulci/gyri** — three layered sinusoidal bumps along the normal, tuned small enough that the surface reads as "folded", not noisy.
-4. **Bottom flatten** — a gentle damp where the brainstem would attach.
+- `u ∈ (0, 0.5)` is the **right hemisphere** (`x > 0`)
+- `u ∈ (0.5, 1.0)` is the **left hemisphere** (`x < 0`)
 
-Normals are recomputed at the end.
+`brainPoint(u, v)` deforms an ellipsoid (a=1.35, b=1.0, c=1.12) with:
 
-Material: `MeshStandardMaterial` with **transparency, low opacity (0.32), and depth-write off**. This lets the inner paths and particles read through the shell while keeping cost low — no `MeshTransmissionMaterial`, no environment HDR loading. The emissive intensity slowly pulses in `useFrame` to suggest internal glow.
+1. A longitudinal fold to suggest lobes.
+2. A Gaussian-shaped interhemispheric fissure along the top centre.
+3. A bottom flatten where the brainstem would attach.
 
-## Idea flow
+Vertex colours blend from neutral white at the centre toward a cool blue on the left and a warm peach on the right, so the hemispheres read as distinct without a hard seam.
 
-`buildFlow(5)` produces five deterministic curves using a seeded RNG so the visual is stable across renders. Each curve:
+Material: `MeshStandardMaterial` with `vertexColors`, `transparent`, `opacity: 0.42`, `depthWrite: false`. Inner emissive cyan pulses slowly over time to suggest internal glow.
 
-- has 5 sampled control points,
-- spirals roughly in a single quadrant of the brain so paths don't all overlap visually,
-- is wrapped in a `TubeGeometry(curve, 64, 0.006, 5, false)` — a thin glowing pipe.
+## Left hemisphere — circuit traces
 
-**Particles** are a **single `instancedMesh`** with `5 × 3 = 15` instances. Per frame, each instance moves along its curve via `curve.getPoint(u)` and its scale pulses subtly. One `instanceMatrix.needsUpdate = true` call per frame, one draw call total.
+A grid of polylines sampled at constant `v` across `u ∈ [0.52, 0.98]`, projected just outside the surface (`× 1.012`):
 
-**Endpoint nodes** are another single `instancedMesh` (~10 instances). Positions are written once on mount; the whole group pulses via a single `scale` update per frame rather than per-instance.
+- 7 horizontal traces × 18 segments each.
+- A handful of vertical connectors so the result reads as a circuit rather than stripes.
 
-## Materials
+All segment pairs are flattened into a single `BufferGeometry` and rendered as **one `THREE.LineSegments`** — 1 draw call.
 
-- **Shell:** `MeshStandardMaterial`, translucent, depth-write off, emissive cyan.
-- **Tubes:** `MeshBasicMaterial`, additive-feel via `toneMapped: false` so they don't get clamped.
-- **Particles & nodes:** `MeshStandardMaterial` with high emissive intensity (2.4 / 1.6), also `toneMapped: false`.
+22 "chips" (small flat boxes) are placed at scattered points on the left surface and rendered as a single `instancedMesh`. Each chip is oriented along its surface normal. Emissive intensity pulses subtly via `useFrame`.
 
-No `MeshTransmissionMaterial`, no `MeshPhysicalMaterial` clearcoat, no environment map.
+## Right hemisphere — neurons + idea flow
+
+`buildNeurons()` generates four soma cell-bodies inside the right hemisphere. Each soma grows 2–3 main dendrites outward, biased toward `+x`. Each dendrite walks 3–4 steps and occasionally throws off a short side-branch.
+
+- The whole branching network → **one `LineSegments`** (1 draw call).
+- Each main dendrite path is also kept as a `CatmullRomCurve3` so particles can travel along it.
+- **Travelling particles** are a single `instancedMesh` (~14 instances). Each frame, the curve is sampled at `u = (t * 0.13 + offset) % 1` and the instance matrix updated. One `instanceMatrix.needsUpdate` per frame, one draw call.
+- **Endpoint nodes** are another single `instancedMesh` (~16 instances). Positions are written once on mount; the whole group pulses via a single `scale` update per frame rather than per-instance.
+
+The neurons are cyan/mint; the circuit traces are violet. This colour split reinforces the hemisphere distinction at a glance.
 
 ## Motion
 
-- **Idle float** — `position.y = sin(t * 0.6) * 0.06`.
-- **Slow rotation** — `rotation.y += 0.0008` per frame.
-- **Pointer parallax** — lerp toward normalised pointer with factor 0.04; gentle, never aggressive.
-- **Particle travel** — `u = (t * 0.12 + offset) % 1`. Slow enough to read.
-- **Pulses** — node scale and shell emissive intensity follow low-frequency sines (1.6 Hz and 0.6 Hz respectively).
+- **Idle float** — `position.y = sin(t * 0.6) * 0.05`.
+- **Slow rotation** — `rotation.y += 0.0006` per frame.
+- **Pointer parallax** — lerp toward normalised pointer with factor 0.04. Gentle, never aggressive.
+- **Particle travel** — `u = (t * 0.13 + offset) % 1`. Slow enough to read.
+- **Pulses** — node scale and shell emissive intensity follow low-frequency sines (1.5 Hz and 0.7 Hz respectively).
 
 ## Performance gates
 
@@ -74,23 +84,19 @@ No `MeshTransmissionMaterial`, no `MeshPhysicalMaterial` clearcoat, no environme
 | `IntersectionObserver` (Canvas)| Off-screen → `frameloop="never"`, zero per-frame cost    |
 | `dpr={[1, 1.5]}`               | Pixel ratio capped — no 3× retina overdraw              |
 | `dynamic(... { ssr: false })`  | The whole scene is split off the initial JS bundle       |
+| `LineSegments` + `instancedMesh` | All repeating structure goes through 1 draw call each  |
+
+`@react-three/drei` is **not** a dependency. Materials are all plain `MeshStandardMaterial` / `MeshBasicMaterial` — no transmission, no environment HDR, no post-processing.
 
 ## Customisation
 
-- **Brand colours** — `ACCENT_CYAN`, `ACCENT_VIOLET` constants at the top of `BrainScene.tsx`.
-- **Brain proportions** — `v.x *= 1.28; v.y *= 1.0; v.z *= 1.12` in `makeBrainGeometry`.
-- **Number of paths** — `buildFlow(5)` in `IdeaFlow`. Each path adds ~5 verts on the curve and 3 particles.
-- **Particle speed** — `t * 0.12` in `IdeaFlow.useFrame`.
-- **Shell translucency** — `opacity={0.32}` in `BrainShell`.
+- **Brand colours** — `CYAN`, `VIOLET`, `MINT` constants at the top of `BrainScene.tsx`.
+- **Brain proportions** — `a / b / c` in `brainPoint`.
+- **Trace density (left)** — `rows`, `cols` in `CircuitTraces`.
+- **Neuron count (right)** — `somaPositions` count + `mainCount` in `buildNeurons`.
+- **Particle speed** — `t * 0.13` in `Neurons.useFrame`.
+- **Shell translucency** — `opacity={0.42}` in `BrainShell`.
 
 ## Mobile / no-WebGL fallback
 
-`BrainStatic` renders a pure SVG idea-flow:
-
-- a two-lobe brain silhouette,
-- 13 pulsing nodes,
-- 20 connecting edges,
-- one travelling pulse along the central fissure (SVG `<animateMotion>`),
-- two CSS-animated ambient halos.
-
-The whole fallback is ≤ 4 KB and paints in the first frame.
+`BrainStatic` renders a pure SVG idea-flow with a brain silhouette, 13 pulsing nodes, 20 connecting edges, and a travelling pulse via SVG `<animateMotion>`. Total ≤ 4 KB, paints in the first frame, zero JS animation cost beyond the SMIL clock.

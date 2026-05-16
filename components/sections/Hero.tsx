@@ -23,7 +23,7 @@ export function Hero() {
   return (
     <section
       id="top"
-      className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-28 pb-16"
+      className="relative isolate flex min-h-[100svh] items-center overflow-hidden pt-24 pb-14 sm:pt-28 sm:pb-16"
     >
       {/* Ambient gradient field — softer, more breathing room */}
       <div
@@ -69,11 +69,10 @@ export function Hero() {
             <span>Creative technology studio · est. 2019</span>
           </motion.div>
 
-          <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.02] tracking-tight sm:text-6xl lg:text-7xl">
-            Ideas with a{" "}
-            <span className="text-gradient">brain</span>.
-            <br />
-            Products with a{" "}
+          <h1 className="mt-6 text-balance font-display text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl sm:leading-[1.05] lg:text-7xl lg:leading-[1.02]">
+            Ideas with a <span className="text-gradient">brain</span>.
+            <br className="hidden sm:block" />
+            <span className="sm:ml-0"> Products with a </span>
             <span className="text-gradient-cyan">soul</span>.
           </h1>
 
@@ -81,7 +80,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease, delay: 0.15 }}
-            className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground"
+            className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg"
           >
             We design, build, and secure websites, web apps, and mobile experiences for
             ambitious teams. Premium craft, startup energy, and the engineering taste to
@@ -111,18 +110,24 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
-            className="mt-12 grid max-w-md grid-cols-3 gap-6 text-sm"
+            className="mt-10 grid max-w-md grid-cols-3 gap-3 text-xs sm:mt-12 sm:gap-6 sm:text-sm"
           >
             <div>
-              <div className="font-display text-2xl font-semibold text-foreground">120+</div>
+              <div className="font-display text-xl font-semibold text-foreground sm:text-2xl">
+                120+
+              </div>
               <div className="text-muted-foreground">products shipped</div>
             </div>
             <div>
-              <div className="font-display text-2xl font-semibold text-foreground">14</div>
+              <div className="font-display text-xl font-semibold text-foreground sm:text-2xl">
+                14
+              </div>
               <div className="text-muted-foreground">countries served</div>
             </div>
             <div>
-              <div className="font-display text-2xl font-semibold text-foreground">99.9%</div>
+              <div className="font-display text-xl font-semibold text-foreground sm:text-2xl">
+                99.9%
+              </div>
               <div className="text-muted-foreground">on-time delivery</div>
             </div>
           </motion.div>

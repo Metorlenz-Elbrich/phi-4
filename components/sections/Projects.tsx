@@ -136,14 +136,14 @@ function Card({ project, index }: { project: Project; index: number }) {
         <PatternArt accent={project.accent} variant={project.id} />
         <div className="absolute inset-0 bg-gradient-to-t from-card via-card/0 to-transparent" />
       </div>
-      <div className="relative p-7">
+      <div className="relative p-5 sm:p-6 lg:p-7">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span className="font-mono uppercase tracking-[0.18em]">
             {project.client}
           </span>
           <span>{project.year}</span>
         </div>
-        <h3 className="mt-3 font-display text-xl font-semibold leading-snug tracking-tight">
+        <h3 className="mt-3 text-balance font-display text-lg font-semibold leading-snug tracking-tight sm:text-xl">
           {project.title}
         </h3>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
@@ -171,7 +171,7 @@ function Card({ project, index }: { project: Project; index: number }) {
 
 export function Projects() {
   return (
-    <section id="work" className="relative scroll-mt-24 py-32 sm:py-36">
+    <section id="work" className="relative scroll-mt-24 py-20 sm:py-28 lg:py-32">
       <div
         className="ambient-glow"
         style={{
@@ -197,7 +197,7 @@ export function Projects() {
               <span className="h-1.5 w-1.5 rounded-full bg-brand-coral animate-glow-pulse" />
               Selected work
             </div>
-            <h2 className="mt-5 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+            <h2 className="mt-5 text-balance font-display text-3xl font-semibold leading-[1.15] tracking-tight sm:text-4xl sm:leading-tight lg:text-5xl">
               Products we've{" "}
               <span className="text-gradient">poured the brain into</span>.
             </h2>

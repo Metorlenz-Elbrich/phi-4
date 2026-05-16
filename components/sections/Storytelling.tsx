@@ -115,7 +115,7 @@ export function Storytelling() {
   }, [reduced]);
 
   return (
-    <section className="relative scroll-mt-24 py-24">
+    <section className="relative scroll-mt-24 py-24 sm:py-28">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 28 }}
@@ -128,25 +128,26 @@ export function Storytelling() {
             <span className="h-1.5 w-1.5 rounded-full bg-brand-amber animate-glow-pulse" />
             How an idea becomes a product
           </div>
-          <h2 className="mt-5 font-display text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
+          <h2 className="mt-5 text-balance font-display text-3xl font-semibold leading-[1.15] tracking-tight sm:text-4xl sm:leading-tight lg:text-5xl">
             The path from <span className="text-gradient">spark</span> to{" "}
             <span className="text-gradient-cyan">ship</span>.
           </h2>
         </motion.div>
       </div>
 
+      {/* Mobile: vertical stack. Desktop: pinned horizontal scroll. */}
       <div
         ref={wrapperRef}
-        className="relative mt-16 h-[100svh] w-full overflow-hidden md:block"
+        className="container relative mt-12 grid grid-cols-1 gap-5 md:mt-16 md:block md:h-[100svh] md:overflow-hidden md:px-0 md:[--track-pad:10vw]"
       >
         <div
           ref={trackRef}
-          className="flex h-full w-max items-center gap-8 px-[10vw] md:gap-12"
+          className="contents md:flex md:h-full md:w-max md:items-center md:gap-12 md:pl-[var(--track-pad)] md:pr-[var(--track-pad)]"
         >
           {chapters.map((c, i) => (
             <article
               key={c.label}
-              className="chapter-card relative flex h-[70vh] w-[80vw] shrink-0 items-center justify-center overflow-hidden rounded-[2.5rem] border border-border bg-card/50 p-10 md:w-[60vw] lg:w-[44vw]"
+              className="chapter-card relative flex w-full shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-border bg-card/50 p-7 sm:p-10 md:h-[70vh] md:w-[60vw] md:rounded-[2.5rem] lg:w-[44vw]"
             >
               <div
                 className="absolute -left-20 -top-20 h-72 w-72 rounded-full blur-3xl"
@@ -164,10 +165,10 @@ export function Storytelling() {
                 }}
               />
 
-              <div className="chapter-inner relative max-w-md text-left">
+              <div className="chapter-inner relative w-full max-w-md text-left">
                 <div className="flex items-center gap-3">
                   <span
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-mono text-foreground"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-full font-mono text-[10px]"
                     style={{
                       background: `${accentColors[c.accent]}20`,
                       border: `1px solid ${accentColors[c.accent]}55`,
@@ -183,10 +184,10 @@ export function Storytelling() {
                     {c.label}
                   </span>
                 </div>
-                <h3 className="mt-6 font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+                <h3 className="mt-4 text-balance font-display text-2xl font-semibold leading-[1.2] tracking-tight sm:mt-6 sm:text-3xl lg:text-4xl">
                   {c.title}
                 </h3>
-                <p className="mt-5 text-base leading-relaxed text-muted-foreground">
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:text-base">
                   {c.body}
                 </p>
               </div>
@@ -194,12 +195,12 @@ export function Storytelling() {
           ))}
 
           {/* Outro card */}
-          <article className="relative flex h-[70vh] w-[80vw] shrink-0 items-center justify-center overflow-hidden rounded-[2.5rem] border border-brand-cyan/30 bg-gradient-to-br from-brand-cyan/10 via-card to-brand-violet/10 p-10 md:w-[50vw] lg:w-[38vw]">
+          <article className="relative flex w-full shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-brand-cyan/30 bg-gradient-to-br from-brand-cyan/10 via-card to-brand-violet/10 p-7 sm:p-10 md:h-[70vh] md:w-[50vw] md:rounded-[2.5rem] lg:w-[38vw]">
             <div className="text-center">
-              <h3 className="font-display text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+              <h3 className="text-balance font-display text-2xl font-semibold leading-[1.2] tracking-tight sm:text-3xl lg:text-4xl">
                 Your story <span className="text-gradient">starts here</span>.
               </h3>
-              <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:text-base">
                 Three to twelve weeks from kickoff to launch, depending on scope.
               </p>
             </div>
