@@ -9,18 +9,6 @@ const icons = [ShieldCheck, Lock, Eye];
 export function Security() {
   return (
     <section id="security" className="section-soft relative scroll-mt-24 py-20 sm:py-28 lg:py-32">
-      <div
-        className="ambient-glow"
-        style={{
-          width: "38rem",
-          height: "38rem",
-          right: "-10%",
-          top: "0%",
-          background:
-            "radial-gradient(circle, hsl(var(--brand-cyan) / 0.22) 0%, transparent 60%)",
-        }}
-      />
-
       <div className="container">
         <div className="grid items-start gap-12 lg:grid-cols-12">
           <motion.div

@@ -128,18 +128,6 @@ function ServiceCard({ service, index }: { service: Service; index: number }) {
 export function Services() {
   return (
     <section id="services" className="relative scroll-mt-24 py-20 sm:py-28 lg:py-32">
-      <div
-        className="ambient-glow"
-        style={{
-          width: "40rem",
-          height: "40rem",
-          left: "60%",
-          top: "10%",
-          background:
-            "radial-gradient(circle, hsl(var(--brand-mint) / 0.18) 0%, transparent 60%)",
-        }}
-      />
-
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 28 }}

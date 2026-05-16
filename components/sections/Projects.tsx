@@ -172,18 +172,6 @@ function Card({ project, index }: { project: Project; index: number }) {
 export function Projects() {
   return (
     <section id="work" className="relative scroll-mt-24 py-20 sm:py-28 lg:py-32">
-      <div
-        className="ambient-glow"
-        style={{
-          width: "30rem",
-          height: "30rem",
-          left: "-5%",
-          top: "20%",
-          background:
-            "radial-gradient(circle, hsl(var(--brand-coral) / 0.18) 0%, transparent 60%)",
-        }}
-      />
-
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 28 }}

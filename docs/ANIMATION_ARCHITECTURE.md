@@ -1,29 +1,24 @@
 # Animation Architecture
 
-PhiBrain blends four motion technologies. Each has a job and a clear boundary.
+PhiBrain animates with **one library plus CSS**.
 
 | Technology         | Job                                                       |
 |--------------------|-----------------------------------------------------------|
-| **Framer Motion**  | Section entrance, hover micro-interactions, layout fades  |
-| **GSAP**           | Scroll-driven storytelling (pinning, scrubbed timelines)  |
-| **React Three Fiber** | The 3D brain hero (the only WebGL surface)             |
-| **Lenis**          | Inertial smooth scroll wrapping the whole page            |
+| **Framer Motion**  | Section entrance, hover micro-interactions, scroll-scrubbed progress rail |
+| **CSS keyframes**  | The BrainVisual logo float + ambient pulses (`globals.css`) |
+| **SVG SMIL**       | The BrainVisual idea-particles + travelling thought       |
 
-## Why split this way
+There is no GSAP, no Lenis, no IntersectionObserver hand-rolled by us. Framer Motion's `whileInView` and `useScroll` handle every scroll-aware effect on the site.
 
-Framer Motion shines at declarative, viewport-aware reveals. GSAP wins on scrubbed scroll because `ScrollTrigger` ties timeline progress directly to scroll position. Mixing them in the same section is fine, but each individual effect lives in one tool, never both.
+## Why this lean stack
 
-## Smooth scroll
-
-`components/providers/SmoothScroll.tsx` instantiates Lenis on mount with a 1.15s `expo` ease, registered to the GSAP ticker indirectly via `requestAnimationFrame`. ScrollTrigger picks up the scroll naturally because Lenis updates `window.scrollY`.
-
-Reduced motion: Lenis is skipped entirely; the browser falls back to native scrolling.
+GSAP and Lenis are excellent libraries — but they each ship a few dozen kilobytes of JS for effects we can build natively in framer-motion. Removing them shrinks the bundle, removes per-frame schedulers, and reduces the number of "moving parts" that can desynchronize on slow devices.
 
 ## Section entrance pattern
 
 ```tsx
 <motion.div
-  initial={{ opacity: 0, y: 28 }}
+  initial={{ opacity: 0, y: 24 }}
   whileInView={{ opacity: 1, y: 0 }}
   viewport={{ once: true, margin: "-15%" }}
   transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -32,26 +27,43 @@ Reduced motion: Lenis is skipped entirely; the browser falls back to native scro
 
 Easing `[0.22, 1, 0.36, 1]` is the project's signature curve — a fast-out, slow-end ease that reads as "confident, not anxious".
 
-## Scroll storytelling
+## Scroll-scrubbed progress (Process section)
 
-**`Process`** uses GSAP to scrub the height of a vertical timeline marker as the section enters the viewport.
+`Process` uses `useScroll` / `useTransform` to map scroll progress within the timeline container to a `scaleY` value on the gradient progress rail:
 
-**`Storytelling`** pins the section and translates a horizontal track using `gsap.to(track, { x: ... , scrollTrigger: { pin: true, scrub } })`. Each chapter has a nested timeline (`containerAnimation`) so chapter copy fades in *within* the pinned scroll.
+```tsx
+const containerRef = useRef(null);
+const { scrollYProgress } = useScroll({
+  target: containerRef,
+  offset: ["start 80%", "end 50%"],
+});
+const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
+return <motion.div style={{ scaleY, transformOrigin: "top" }} />;
+```
 
-The horizontal pin is disabled on viewports below `768px` and when `prefers-reduced-motion` is set; the chapters then fall back to a normal vertical stack.
+This is everything GSAP's `ScrollTrigger { scrub }` would have given us, in 5 lines, with no extra library.
 
-## 3D motion
+## Idle animation (BrainVisual)
 
-`BrainScene` keeps three independent motion loops:
+- The logo floats via the Tailwind `animate-float` keyframe (a 12-px gentle sine).
+- Eight SVG particles around the logo pulse `r` and `opacity` via `<animate>` tags on a 3.6s cycle, staggered.
+- One travelling "thought" dot follows an SVG path via `<animateMotion>` on a 10s loop.
 
-1. **Float idle** — `<Float speed={1.2}>` from drei wraps the brain so it gently bobs.
-2. **Pointer parallax** — `useFrame` lerps brain rotation toward `pointer.current.x/y`.
-3. **Per-element pulses** — node spheres pulse via `emissiveIntensity = 0.6 + 0.4 * sin(t)`; circuit chips pulse on a different phase.
+All of this is browser-native. There is no JS animation loop running for the hero.
 
-These all run on the same `useFrame` tick — no extra rAF loops.
+## Reduced motion
 
-## Performance notes
+The global stylesheet honours `prefers-reduced-motion`:
 
-- Framer Motion is tree-shaken via `experimental.optimizePackageImports` in `next.config.mjs`.
-- GSAP + ScrollTrigger are loaded **dynamically inside `useEffect`** in only the two sections that need them. The hero never imports GSAP.
-- `BrainScene` is dynamically imported (`ssr: false`) — its weight stays out of the LCP path.
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+```
+
+This catches CSS keyframes (float, glow-pulse, marquee) and SVG SMIL (the browser respects the same media query for SMIL animations on most platforms). Framer Motion automatically respects the media query via its built-in reduced-motion support.

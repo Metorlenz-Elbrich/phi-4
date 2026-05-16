@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -61,10 +60,7 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrains.variable}`}
     >
       <body className="font-sans antialiased">
-        <ThemeProvider>
-          <SmoothScroll />
-          {children}
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
